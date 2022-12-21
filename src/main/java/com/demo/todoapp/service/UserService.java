@@ -9,7 +9,8 @@ import com.demo.todoapp.request.UserCreateRequest;
 import com.demo.todoapp.util.MailSendService;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Objects;
+
 
 @Service
 public class UserService {
@@ -32,6 +33,12 @@ public class UserService {
                 request.getPassword(),
                 request.getMail()
         );
+
+        if (userRepository.existsUserByMail(saved.getMail())){
+            throw new RuntimeException();
+        }
+
+
         userRepository.save(saved);
 
         return new UserDto(

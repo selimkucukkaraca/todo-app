@@ -51,6 +51,10 @@ public class UserController{
                 .ok(userService.getByMail(mail));
     }
 
-
+    @DeleteMapping
+    public ResponseEntity<?> delete(@RequestParam String mail){
+        userService.delete(mail);
+        return ResponseEntity.noContent().build();
+    }
 
 }
