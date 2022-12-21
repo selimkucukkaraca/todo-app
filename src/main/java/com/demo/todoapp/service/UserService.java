@@ -9,6 +9,8 @@ import com.demo.todoapp.request.UserCreateRequest;
 import com.demo.todoapp.util.MailSendService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -80,8 +82,38 @@ public class UserService {
         return null;
     }
 
+    public UserDto deactivateUser(String mail){
+        var fromDbUser = getUserByMail(mail);
+        fromDbUser.setActive(false);
+
+        userRepository.save(fromDbUser);
+
+        return new UserDto(
+                fromDbUser.getUsername(),
+                fromDbUser.getMail(),
+                fromDbUser.isActive(),
+                fromDbUser.getCreateDate(),
+                fromDbUser.getUpdateDate()
+        );
+    }
+
+    public UserDto getByMail(String mail){
+        User fromDbUser = userRepository.findUserByMail(mail)
+                .orElseThrow();     // TODO
+
+        return new UserDto(
+                fromDbUser.getUsername(),
+                fromDbUser.getMail(),
+                fromDbUser.isActive(),
+                fromDbUser.getCreateDate(),
+                fromDbUser.getUpdateDate()
+        );
+    }
+
+
     protected User getUserByMail(String mail){
         return userRepository.findUserByMail(mail)
                 .orElseThrow(RuntimeException::new);
     }
+
 }
