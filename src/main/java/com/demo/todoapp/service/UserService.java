@@ -9,7 +9,6 @@ import com.demo.todoapp.request.UserCreateRequest;
 import com.demo.todoapp.util.MailSendService;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 
 
 @Service
@@ -31,7 +30,8 @@ public class UserService {
         var saved = new User(
                 request.getUsername(),
                 request.getPassword(),
-                request.getMail()
+                request.getMail(),
+                request.getImageUrl()
         );
 
         if (userRepository.existsUserByMail(saved.getMail())){
@@ -46,7 +46,8 @@ public class UserService {
                 saved.getPassword(),
                 saved.isActive(),
                 saved.getCreateDate(),
-                saved.getUpdateDate()
+                saved.getUpdateDate(),
+                saved.getImageUrl()
         );
     }
 
@@ -83,7 +84,8 @@ public class UserService {
                     user.getMail(),
                     user.isActive(),
                     user.getCreateDate(),
-                    user.getUpdateDate()
+                    user.getUpdateDate(),
+                    user.getImageUrl()
             );
         }
         return null;
@@ -100,7 +102,8 @@ public class UserService {
                 fromDbUser.getMail(),
                 fromDbUser.isActive(),
                 fromDbUser.getCreateDate(),
-                fromDbUser.getUpdateDate()
+                fromDbUser.getUpdateDate(),
+                fromDbUser.getImageUrl()
         );
     }
 
@@ -113,7 +116,8 @@ public class UserService {
                 fromDbUser.getMail(),
                 fromDbUser.isActive(),
                 fromDbUser.getCreateDate(),
-                fromDbUser.getUpdateDate()
+                fromDbUser.getUpdateDate(),
+                fromDbUser.getImageUrl()
         );
     }
 

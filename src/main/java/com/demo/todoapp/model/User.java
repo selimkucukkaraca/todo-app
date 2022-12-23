@@ -20,10 +20,12 @@ public class User extends BaseEntity {
     private boolean isActive = false;
     @OneToOne
     private ConfirmCode confirmCode;
+    private String imageUrl;
 
-    public User(String username, String password, String mail) {
+    public User(String username, String password, String mail, String imageUrl) {
         this.username = username;
         this.password = password;
         this.mail = mail;
+        this.imageUrl = imageUrl;
     }
 }

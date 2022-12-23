@@ -17,13 +17,11 @@ public class TodoService {
     private final TodoRepository todoRepository;
     private final UserService userService;
 
-
     public TodoService(TodoRepository todoRepository,
                        UserService userService) {
         this.todoRepository = todoRepository;
         this.userService = userService;
     }
-
 
     public TodoDto save(TodoCreateRequest request){
         User user = userService.getUserByMail(request.getUserMail());
@@ -31,7 +29,8 @@ public class TodoService {
         var saved = new Todo(
                 request.getTitle(),
                 request.getBody(),
-                user
+                user,
+                request.getImageUrl()
         );
 
         if (!user.isActive()){
@@ -46,12 +45,15 @@ public class TodoService {
                 saved.getBody(),
                 saved.getCreateDate(),
                 saved.getUpdateDate(),
+                saved.getImageUrl(),
+                saved.isDone(),
                 new UserDto(
                         user.getUsername(),
                         user.getMail(),
                         user.isActive(),
                         user.getCreateDate(),
-                        user.getUpdateDate()
+                        user.getUpdateDate(),
+                        user.getImageUrl()
                 )
         );
     }
@@ -71,16 +73,26 @@ public class TodoService {
                         todo.getBody(),
                         todo.getCreateDate(),
                         todo.getUpdateDate(),
+                        todo.getImageUrl(),
+                        todo.isDone(),
                         new UserDto(
                                 todo.getUser().getUsername(),
                                 todo.getUser().getMail(),
                                 todo.getUser().isActive(),
                                 todo.getUser().getCreateDate(),
-                                todo.getUser().getUpdateDate()
+                                todo.getUser().getUpdateDate(),
+                                todo.getUser().getImageUrl()
                         )
                 ))
                 .collect(Collectors.toList());
      }
+
+     public void updateTodoDoneStatus(String publicId, boolean status){
+        var fromDbTodo = getTodoByPublicId(publicId);
+        fromDbTodo.setDone(status);
+        todoRepository.save(fromDbTodo);
+     }
+
 
      protected Todo getTodoByPublicId(String publicId){
         return todoRepository.findTodoByPublicId(publicId)

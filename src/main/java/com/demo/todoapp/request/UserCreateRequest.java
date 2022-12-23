@@ -14,4 +14,6 @@ public class UserCreateRequest {
     private String password;
     @Email
     private String mail;
+    private String imageUrl;
+
 }

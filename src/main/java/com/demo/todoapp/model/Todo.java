@@ -21,10 +21,13 @@ public class Todo extends BaseEntity {
     private String body;
     @ManyToOne
     private User user;
+    private String imageUrl;
+    private boolean isDone = false;
 
-    public Todo(String title, String body, User user) {
+    public Todo(String title, String body, User user, String imageUrl) {
         this.title = title;
         this.body = body;
         this.user = user;
+        this.imageUrl = imageUrl;
     }
 }

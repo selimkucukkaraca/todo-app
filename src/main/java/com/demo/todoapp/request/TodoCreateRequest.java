@@ -12,4 +12,5 @@ public class TodoCreateRequest {
     private String body;
     @Email
     private String userMail;
+    private String imageUrl;
 }

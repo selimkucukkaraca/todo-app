@@ -39,4 +39,12 @@ public class TodoController {
         return ResponseEntity
                 .ok(todoService.getByUser(mail));
     }
+
+    @PutMapping("/update-done-status")
+    public ResponseEntity<?> getTodoByPublicId(@RequestParam(value = "publicId") String publicId, @RequestParam(value = "status") boolean status){
+        todoService.updateTodoDoneStatus(publicId, status);
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
 }

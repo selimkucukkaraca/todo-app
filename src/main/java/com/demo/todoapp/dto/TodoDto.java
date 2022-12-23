@@ -13,6 +13,9 @@ public class TodoDto {
     private String body;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+    private String imageUrl;
+    private boolean isDone;
     private UserDto userDto;
+
 
 }

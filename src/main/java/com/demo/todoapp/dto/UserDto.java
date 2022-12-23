@@ -13,4 +13,5 @@ public class UserDto {
     private boolean isActive;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+    private String imageUrl;
 }
