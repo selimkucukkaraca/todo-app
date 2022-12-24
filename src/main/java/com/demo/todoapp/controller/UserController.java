@@ -2,6 +2,7 @@ package com.demo.todoapp.controller;
 
 import com.demo.todoapp.dto.UserDto;
 import com.demo.todoapp.request.UserCreateRequest;
+import com.demo.todoapp.request.UserLoginRequest;
 import com.demo.todoapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -58,4 +59,9 @@ public class UserController{
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<UserDto> login(@RequestBody UserLoginRequest request){
+        return ResponseEntity
+                .ok(userService.login(request));
+    }
 }

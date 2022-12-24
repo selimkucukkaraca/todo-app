@@ -1,11 +1,14 @@
 package com.demo.todoapp.service;
 
 import com.demo.todoapp.dto.UserDto;
+import com.demo.todoapp.exception.NotFoundException;
+import com.demo.todoapp.exception.generic.GenericExistException;
 import com.demo.todoapp.model.ConfirmCode;
 import com.demo.todoapp.model.User;
 import com.demo.todoapp.repository.ConfirmCodeRepository;
 import com.demo.todoapp.repository.UserRepository;
 import com.demo.todoapp.request.UserCreateRequest;
+import com.demo.todoapp.request.UserLoginRequest;
 import com.demo.todoapp.util.MailSendService;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +38,7 @@ public class UserService {
         );
 
         if (userRepository.existsUserByMail(saved.getMail())){
-            throw new RuntimeException();
+            throw new GenericExistException("");
         }
 
 
@@ -121,10 +124,25 @@ public class UserService {
         );
     }
 
+    public UserDto login(UserLoginRequest request){
+        var fromDbUser = getUserByMail(request.getMail());
+        if (fromDbUser.getPassword().equals(request.getPassword())){
+            return new UserDto(
+                    fromDbUser.getUsername(),
+                    fromDbUser.getMail(),
+                    fromDbUser.isActive(),
+                    fromDbUser.getCreateDate(),
+                    fromDbUser.getUpdateDate(),
+                    fromDbUser.getImageUrl()
+            );
+        }
+        throw new RuntimeException(); //TODO
+    }
+
 
     protected User getUserByMail(String mail){
         return userRepository.findUserByMail(mail)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(()->new NotFoundException(""));
     }
 
 }

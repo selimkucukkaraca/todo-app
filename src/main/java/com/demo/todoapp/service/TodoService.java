@@ -2,6 +2,8 @@ package com.demo.todoapp.service;
 
 import com.demo.todoapp.dto.TodoDto;
 import com.demo.todoapp.dto.UserDto;
+import com.demo.todoapp.exception.NotFoundException;
+import com.demo.todoapp.exception.generic.GenericExistException;
 import com.demo.todoapp.model.Todo;
 import com.demo.todoapp.model.User;
 import com.demo.todoapp.repository.TodoRepository;
@@ -34,7 +36,7 @@ public class TodoService {
         );
 
         if (!user.isActive()){
-            throw new RuntimeException();
+            throw new GenericExistException("");
         }
         todoRepository.save(saved);
 
@@ -96,7 +98,7 @@ public class TodoService {
 
      protected Todo getTodoByPublicId(String publicId){
         return todoRepository.findTodoByPublicId(publicId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(()->new NotFoundException(""));
      }
 
 }
