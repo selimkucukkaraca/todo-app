@@ -47,4 +47,11 @@ public class TodoController {
                 .noContent()
                 .build();
     }
+
+    @PostMapping("/clone")
+    public ResponseEntity<TodoDto> cloneTodoByPublicId(@RequestParam String publicId){
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(todoService.cloneTodoByPublicId(publicId));
+    }
 }

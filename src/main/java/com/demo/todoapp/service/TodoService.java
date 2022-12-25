@@ -25,6 +25,40 @@ public class TodoService {
         this.userService = userService;
     }
 
+
+    public TodoDto cloneTodoByPublicId(String publicId){
+        var fromDbTodo = getTodoByPublicId(publicId);
+
+        var cloneTodo = new Todo(
+                fromDbTodo.getTitle(),
+                fromDbTodo.getBody(),
+                fromDbTodo.getUser(),
+                fromDbTodo.getImageUrl()
+        );
+
+        todoRepository.save(cloneTodo);
+
+        return new TodoDto(
+                cloneTodo.getPublicId(),
+                cloneTodo.getTitle(),
+                cloneTodo.getBody(),
+                cloneTodo.getCreateDate(),
+                cloneTodo.getUpdateDate(),
+                cloneTodo.getImageUrl(),
+                cloneTodo.isDone(),
+                new UserDto(
+                        cloneTodo.getUser().getUsername(),
+                        cloneTodo.getUser().getMail(),
+                        cloneTodo.getUser().isActive(),
+                        cloneTodo.getUser().getCreateDate(),
+                        cloneTodo.getUser().getUpdateDate(),
+                        cloneTodo.getUser().getImageUrl(),
+                        cloneTodo.getUser().getLastLoginDate()
+
+                ));
+    }
+
+
     public TodoDto save(TodoCreateRequest request){
         User user = userService.getUserByMail(request.getUserMail());
 
@@ -55,7 +89,8 @@ public class TodoService {
                         user.isActive(),
                         user.getCreateDate(),
                         user.getUpdateDate(),
-                        user.getImageUrl()
+                        user.getImageUrl(),
+                        user.getLastLoginDate()
                 )
         );
     }
@@ -83,7 +118,8 @@ public class TodoService {
                                 todo.getUser().isActive(),
                                 todo.getUser().getCreateDate(),
                                 todo.getUser().getUpdateDate(),
-                                todo.getUser().getImageUrl()
+                                todo.getUser().getImageUrl(),
+                                todo.getUser().getLastLoginDate()
                         )
                 ))
                 .collect(Collectors.toList());
@@ -95,10 +131,10 @@ public class TodoService {
         todoRepository.save(fromDbTodo);
      }
 
-
      protected Todo getTodoByPublicId(String publicId){
         return todoRepository.findTodoByPublicId(publicId)
                 .orElseThrow(()->new NotFoundException(""));
      }
+
 
 }

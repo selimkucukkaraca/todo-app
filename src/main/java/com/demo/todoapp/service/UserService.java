@@ -12,6 +12,7 @@ import com.demo.todoapp.request.UserLoginRequest;
 import com.demo.todoapp.util.MailSendService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 
 
 @Service
@@ -50,7 +51,8 @@ public class UserService {
                 saved.isActive(),
                 saved.getCreateDate(),
                 saved.getUpdateDate(),
-                saved.getImageUrl()
+                saved.getImageUrl(),
+                saved.getLastLoginDate()
         );
     }
 
@@ -88,7 +90,8 @@ public class UserService {
                     user.isActive(),
                     user.getCreateDate(),
                     user.getUpdateDate(),
-                    user.getImageUrl()
+                    user.getImageUrl(),
+                    user.getLastLoginDate()
             );
         }
         return null;
@@ -106,7 +109,8 @@ public class UserService {
                 fromDbUser.isActive(),
                 fromDbUser.getCreateDate(),
                 fromDbUser.getUpdateDate(),
-                fromDbUser.getImageUrl()
+                fromDbUser.getImageUrl(),
+                fromDbUser.getLastLoginDate()
         );
     }
 
@@ -120,25 +124,28 @@ public class UserService {
                 fromDbUser.isActive(),
                 fromDbUser.getCreateDate(),
                 fromDbUser.getUpdateDate(),
-                fromDbUser.getImageUrl()
+                fromDbUser.getImageUrl(),
+                fromDbUser.getLastLoginDate()
         );
     }
 
     public UserDto login(UserLoginRequest request){
         var fromDbUser = getUserByMail(request.getMail());
         if (fromDbUser.getPassword().equals(request.getPassword())){
+            fromDbUser.setLastLoginDate(LocalDateTime.now());
+            userRepository.save(fromDbUser);
             return new UserDto(
                     fromDbUser.getUsername(),
                     fromDbUser.getMail(),
                     fromDbUser.isActive(),
                     fromDbUser.getCreateDate(),
                     fromDbUser.getUpdateDate(),
-                    fromDbUser.getImageUrl()
+                    fromDbUser.getImageUrl(),
+                    fromDbUser.getLastLoginDate()
             );
         }
-        throw new RuntimeException(); //TODO
+        throw new RuntimeException();
     }
-
 
     protected User getUserByMail(String mail){
         return userRepository.findUserByMail(mail)

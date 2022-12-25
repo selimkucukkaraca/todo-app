@@ -14,4 +14,6 @@ public class UserDto {
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
     private String imageUrl;
+    private LocalDateTime lastLoginDate;
+
 }

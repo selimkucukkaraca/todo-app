@@ -3,6 +3,8 @@ package com.demo.todoapp.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString
@@ -21,6 +23,7 @@ public class User extends BaseEntity {
     @OneToOne
     private ConfirmCode confirmCode;
     private String imageUrl;
+    private LocalDateTime lastLoginDate;
 
     public User(String username, String password, String mail, String imageUrl) {
         this.username = username;
