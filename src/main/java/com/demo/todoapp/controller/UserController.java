@@ -3,11 +3,14 @@ package com.demo.todoapp.controller;
 import com.demo.todoapp.dto.UserDto;
 import com.demo.todoapp.request.UserCreateRequest;
 import com.demo.todoapp.request.UserLoginRequest;
+import com.demo.todoapp.request.UserUpdateRequest;
 import com.demo.todoapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -63,5 +66,11 @@ public class UserController{
     public ResponseEntity<UserDto> login(@RequestBody UserLoginRequest request){
         return ResponseEntity
                 .ok(userService.login(request));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<UserDto> updateUser(@RequestParam String mail,
+                                              @RequestBody Optional<UserUpdateRequest> request){
+        return ResponseEntity.ok(userService.updateUser(mail, request));
     }
 }

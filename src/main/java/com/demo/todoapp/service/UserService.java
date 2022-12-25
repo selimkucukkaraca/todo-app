@@ -9,10 +9,13 @@ import com.demo.todoapp.repository.ConfirmCodeRepository;
 import com.demo.todoapp.repository.UserRepository;
 import com.demo.todoapp.request.UserCreateRequest;
 import com.demo.todoapp.request.UserLoginRequest;
+import com.demo.todoapp.request.UserUpdateRequest;
 import com.demo.todoapp.util.MailSendService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -145,6 +148,24 @@ public class UserService {
             );
         }
         throw new RuntimeException();
+    }
+
+    public UserDto updateUser(String mail,Optional<UserUpdateRequest> request){
+        var fromDbUser = getUserByMail(mail);
+        fromDbUser.setUsername(request.get().getUsername());
+        fromDbUser.setPassword(request.get().getPassword());
+        fromDbUser.setImageUrl(request.get().getImageUrl());
+        userRepository.save(fromDbUser);
+
+        return new UserDto(
+                fromDbUser.getUsername(),
+                fromDbUser.getMail(),
+                fromDbUser.isActive(),
+                fromDbUser.getCreateDate(),
+                fromDbUser.getUpdateDate(),
+                fromDbUser.getImageUrl(),
+                fromDbUser.getLastLoginDate()
+        );
     }
 
     protected User getUserByMail(String mail){
