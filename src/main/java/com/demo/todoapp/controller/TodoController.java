@@ -54,4 +54,10 @@ public class TodoController {
                 .status(HttpStatus.CREATED)
                 .body(todoService.cloneTodoByPublicId(publicId));
     }
+
+    @GetMapping("/get-by-public-id/{publicId}")
+    public ResponseEntity<TodoDto> getByPublicId(@PathVariable String publicId){
+        return ResponseEntity
+                .ok(todoService.getByPublicId(publicId));
+    }
 }

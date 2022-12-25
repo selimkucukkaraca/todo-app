@@ -26,6 +26,30 @@ public class TodoService {
         this.userService = userService;
     }
 
+    public TodoDto getByPublicId(String publicId){
+        Todo fromDbTodo = todoRepository.findTodoByPublicId(publicId)
+                .orElseThrow(()-> new NotFoundException("publicId not found :" + publicId));
+
+        return new TodoDto(
+                fromDbTodo.getPublicId(),
+                fromDbTodo.getTitle(),
+                fromDbTodo.getBody(),
+                fromDbTodo.getCreateDate(),
+                fromDbTodo.getUpdateDate(),
+                fromDbTodo.getImageUrl(),
+                fromDbTodo.isDone(),
+                new UserDto(
+                        fromDbTodo.getUser().getUsername(),
+                        fromDbTodo.getUser().getMail(),
+                        fromDbTodo.getUser().isActive(),
+                        fromDbTodo.getUser().getCreateDate(),
+                        fromDbTodo.getUser().getUpdateDate(),
+                        fromDbTodo.getUser().getImageUrl(),
+                        fromDbTodo.getUser().getLastLoginDate()
+                )
+        );
+    }
+
 
     public TodoDto cloneTodoByPublicId(String publicId){
         var fromDbTodo = getTodoByPublicId(publicId);
