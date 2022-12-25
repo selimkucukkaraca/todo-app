@@ -3,6 +3,7 @@ package com.demo.todoapp.service;
 import com.demo.todoapp.dto.TodoDto;
 import com.demo.todoapp.dto.UserDto;
 import com.demo.todoapp.exception.NotFoundException;
+import com.demo.todoapp.exception.UserNotActiveException;
 import com.demo.todoapp.exception.generic.GenericExistException;
 import com.demo.todoapp.model.Todo;
 import com.demo.todoapp.model.User;
@@ -70,7 +71,7 @@ public class TodoService {
         );
 
         if (!user.isActive()){
-            throw new GenericExistException("");
+            throw new UserNotActiveException("user not active, mail: " + saved.getUser().getMail());
         }
         todoRepository.save(saved);
 

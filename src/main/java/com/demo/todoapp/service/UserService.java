@@ -39,7 +39,7 @@ public class UserService {
         );
 
         if (userRepository.existsUserByMail(saved.getMail())){
-            throw new GenericExistException("");
+            throw new GenericExistException("user already exist , mail : " + saved.getMail());
         }
 
 
@@ -116,7 +116,7 @@ public class UserService {
 
     public UserDto getByMail(String mail){
         User fromDbUser = userRepository.findUserByMail(mail)
-                .orElseThrow();     // TODO
+                .orElseThrow(() -> new NotFoundException("mail not found : " + mail));
 
         return new UserDto(
                 fromDbUser.getUsername(),

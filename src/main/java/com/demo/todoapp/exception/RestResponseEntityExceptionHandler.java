@@ -33,6 +33,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UserNotActiveException.class)
+    protected ResponseEntity<?> userNotActiveException(UserNotActiveException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+
 
 
 
