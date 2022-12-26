@@ -9,9 +9,11 @@ import com.demo.todoapp.model.Todo;
 import com.demo.todoapp.model.User;
 import com.demo.todoapp.repository.TodoRepository;
 import com.demo.todoapp.request.TodoCreateRequest;
+import com.demo.todoapp.request.TodoUpdateRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -154,6 +156,33 @@ public class TodoService {
         var fromDbTodo = getTodoByPublicId(publicId);
         fromDbTodo.setDone(status);
         todoRepository.save(fromDbTodo);
+     }
+
+     public TodoDto updateTodo(String publicId, Optional<TodoUpdateRequest> request){
+        var fromDbTodo = getTodoByPublicId(publicId);
+        fromDbTodo.setBody(request.get().getBody());
+        fromDbTodo.setTitle(request.get().getTitle());
+        fromDbTodo.setImageUrl(request.get().getImageUrl());
+        todoRepository.save(fromDbTodo);
+
+        return new TodoDto(
+                fromDbTodo.getPublicId(),
+                fromDbTodo.getTitle(),
+                fromDbTodo.getBody(),
+                fromDbTodo.getCreateDate(),
+                fromDbTodo.getUpdateDate(),
+                fromDbTodo.getImageUrl(),
+                fromDbTodo.isDone(),
+                new UserDto(
+                        fromDbTodo.getUser().getUsername(),
+                        fromDbTodo.getUser().getMail(),
+                        fromDbTodo.getUser().isActive(),
+                        fromDbTodo.getUser().getCreateDate(),
+                        fromDbTodo.getUser().getUpdateDate(),
+                        fromDbTodo.getUser().getImageUrl(),
+                        fromDbTodo.getUser().getLastLoginDate()
+                )
+        );
      }
 
      protected Todo getTodoByPublicId(String publicId){

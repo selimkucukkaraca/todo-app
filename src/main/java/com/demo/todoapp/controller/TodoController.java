@@ -2,6 +2,7 @@ package com.demo.todoapp.controller;
 
 import com.demo.todoapp.dto.TodoDto;
 import com.demo.todoapp.request.TodoCreateRequest;
+import com.demo.todoapp.request.TodoUpdateRequest;
 import com.demo.todoapp.service.TodoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/todo")
@@ -59,5 +61,11 @@ public class TodoController {
     public ResponseEntity<TodoDto> getByPublicId(@PathVariable String publicId){
         return ResponseEntity
                 .ok(todoService.getByPublicId(publicId));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<TodoDto> updateTodo(@RequestParam String publicId,
+                                              @RequestBody Optional<TodoUpdateRequest> request){
+        return ResponseEntity.ok(todoService.updateTodo(publicId,request));
     }
 }

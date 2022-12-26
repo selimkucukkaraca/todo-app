@@ -71,6 +71,6 @@ public class UserController{
     @PutMapping("/update")
     public ResponseEntity<UserDto> updateUser(@RequestParam String mail,
                                               @RequestBody Optional<UserUpdateRequest> request){
-        return ResponseEntity.ok(userService.updateUser(mail, request));
+        return ResponseEntity.ok(userService.updateUser(mail,request));
     }
 }
