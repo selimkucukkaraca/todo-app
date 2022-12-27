@@ -4,7 +4,6 @@ import com.demo.todoapp.dto.TodoDto;
 import com.demo.todoapp.dto.UserDto;
 import com.demo.todoapp.exception.NotFoundException;
 import com.demo.todoapp.exception.UserNotActiveException;
-import com.demo.todoapp.exception.generic.GenericExistException;
 import com.demo.todoapp.model.Todo;
 import com.demo.todoapp.model.User;
 import com.demo.todoapp.repository.TodoRepository;
@@ -40,6 +39,7 @@ public class TodoService {
                 fromDbTodo.getUpdateDate(),
                 fromDbTodo.getImageUrl(),
                 fromDbTodo.isDone(),
+                fromDbTodo.getCompletionDate(),
                 new UserDto(
                         fromDbTodo.getUser().getUsername(),
                         fromDbTodo.getUser().getMail(),
@@ -60,7 +60,8 @@ public class TodoService {
                 fromDbTodo.getTitle(),
                 fromDbTodo.getBody(),
                 fromDbTodo.getUser(),
-                fromDbTodo.getImageUrl()
+                fromDbTodo.getImageUrl(),
+                fromDbTodo.getCompletionDate()
         );
 
         todoRepository.save(cloneTodo);
@@ -73,6 +74,7 @@ public class TodoService {
                 cloneTodo.getUpdateDate(),
                 cloneTodo.getImageUrl(),
                 cloneTodo.isDone(),
+                cloneTodo.getCompletionDate(),
                 new UserDto(
                         cloneTodo.getUser().getUsername(),
                         cloneTodo.getUser().getMail(),
@@ -93,7 +95,8 @@ public class TodoService {
                 request.getTitle(),
                 request.getBody(),
                 user,
-                request.getImageUrl()
+                request.getImageUrl(),
+                request.getCompletionDate()
         );
 
         if (!user.isActive()){
@@ -110,6 +113,7 @@ public class TodoService {
                 saved.getUpdateDate(),
                 saved.getImageUrl(),
                 saved.isDone(),
+                saved.getCompletionDate(),
                 new UserDto(
                         user.getUsername(),
                         user.getMail(),
@@ -139,6 +143,7 @@ public class TodoService {
                         todo.getUpdateDate(),
                         todo.getImageUrl(),
                         todo.isDone(),
+                        todo.getCompletionDate(),
                         new UserDto(
                                 todo.getUser().getUsername(),
                                 todo.getUser().getMail(),
@@ -163,7 +168,7 @@ public class TodoService {
         fromDbTodo.setBody(request.get().getBody());
         fromDbTodo.setTitle(request.get().getTitle());
         fromDbTodo.setImageUrl(request.get().getImageUrl());
-        todoRepository.save(fromDbTodo);
+        todoRepository.save(fromDbTodo); //TODO
 
         return new TodoDto(
                 fromDbTodo.getPublicId(),
@@ -173,6 +178,7 @@ public class TodoService {
                 fromDbTodo.getUpdateDate(),
                 fromDbTodo.getImageUrl(),
                 fromDbTodo.isDone(),
+                fromDbTodo.getCompletionDate(),
                 new UserDto(
                         fromDbTodo.getUser().getUsername(),
                         fromDbTodo.getUser().getMail(),

@@ -22,12 +22,15 @@ public class Todo extends BaseEntity {
     @ManyToOne
     private User user;
     private String imageUrl;
+    private String completionDate;
     private boolean isDone = false;
 
-    public Todo(String title, String body, User user, String imageUrl) {
+
+    public Todo(String title, String body, User user, String imageUrl,String completionDate) {
         this.title = title;
         this.body = body;
         this.user = user;
         this.imageUrl = imageUrl;
+        this.completionDate = completionDate;
     }
 }

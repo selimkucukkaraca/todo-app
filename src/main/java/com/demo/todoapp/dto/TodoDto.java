@@ -15,6 +15,7 @@ public class TodoDto {
     private LocalDateTime updateDate;
     private String imageUrl;
     private boolean isDone;
+    private String completionDate;
     private UserDto userDto;
 
 
