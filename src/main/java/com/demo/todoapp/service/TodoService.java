@@ -27,33 +27,30 @@ public class TodoService {
         this.userService = userService;
     }
 
-    public TodoDto getByPublicId(String publicId){
-        Todo fromDbTodo = todoRepository.findTodoByPublicId(publicId)
-                .orElseThrow(()-> new NotFoundException("publicId not found :" + publicId));
 
+    public TodoDto convertTodoToTodoDto(Todo from) {
         return new TodoDto(
-                fromDbTodo.getPublicId(),
-                fromDbTodo.getTitle(),
-                fromDbTodo.getBody(),
-                fromDbTodo.getCreateDate(),
-                fromDbTodo.getUpdateDate(),
-                fromDbTodo.getImageUrl(),
-                fromDbTodo.isDone(),
-                fromDbTodo.getCompletionDate(),
-                new UserDto(
-                        fromDbTodo.getUser().getUsername(),
-                        fromDbTodo.getUser().getMail(),
-                        fromDbTodo.getUser().isActive(),
-                        fromDbTodo.getUser().getCreateDate(),
-                        fromDbTodo.getUser().getUpdateDate(),
-                        fromDbTodo.getUser().getImageUrl(),
-                        fromDbTodo.getUser().getLastLoginDate()
-                )
+                from.getPublicId(),
+                from.getTitle(),
+                from.getBody(),
+                from.getCreateDate(),
+                from.getUpdateDate(),
+                from.getImageUrl(),
+                from.isDone(),
+                from.getCompletionDate(),
+                userService.convertUserToUserDto(from.getUser())
         );
     }
 
+    public TodoDto getByPublicId(String publicId) {
+        Todo fromDbTodo = todoRepository.findTodoByPublicId(publicId)
+                .orElseThrow(() -> new NotFoundException("publicId not found :" + publicId));
 
-    public TodoDto cloneTodoByPublicId(String publicId){
+        return convertTodoToTodoDto(fromDbTodo);
+    }
+
+
+    public TodoDto cloneTodoByPublicId(String publicId) {
         var fromDbTodo = getTodoByPublicId(publicId);
 
         var cloneTodo = new Todo(
@@ -65,30 +62,11 @@ public class TodoService {
         );
 
         todoRepository.save(cloneTodo);
-
-        return new TodoDto(
-                cloneTodo.getPublicId(),
-                cloneTodo.getTitle(),
-                cloneTodo.getBody(),
-                cloneTodo.getCreateDate(),
-                cloneTodo.getUpdateDate(),
-                cloneTodo.getImageUrl(),
-                cloneTodo.isDone(),
-                cloneTodo.getCompletionDate(),
-                new UserDto(
-                        cloneTodo.getUser().getUsername(),
-                        cloneTodo.getUser().getMail(),
-                        cloneTodo.getUser().isActive(),
-                        cloneTodo.getUser().getCreateDate(),
-                        cloneTodo.getUser().getUpdateDate(),
-                        cloneTodo.getUser().getImageUrl(),
-                        cloneTodo.getUser().getLastLoginDate()
-
-                ));
+        return convertTodoToTodoDto(cloneTodo);
     }
 
 
-    public TodoDto save(TodoCreateRequest request){
+    public TodoDto save(TodoCreateRequest request) {
         User user = userService.getUserByMail(request.getUserMail());
 
         var saved = new Todo(
@@ -99,102 +77,47 @@ public class TodoService {
                 request.getCompletionDate()
         );
 
-        if (!user.isActive()){
+        if (!user.isActive()) {
             throw new UserNotActiveException("user not active, mail: " + saved.getUser().getMail());
         }
         todoRepository.save(saved);
-
-
-        return new TodoDto(
-                saved.getPublicId(),
-                saved.getTitle(),
-                saved.getBody(),
-                saved.getCreateDate(),
-                saved.getUpdateDate(),
-                saved.getImageUrl(),
-                saved.isDone(),
-                saved.getCompletionDate(),
-                new UserDto(
-                        user.getUsername(),
-                        user.getMail(),
-                        user.isActive(),
-                        user.getCreateDate(),
-                        user.getUpdateDate(),
-                        user.getImageUrl(),
-                        user.getLastLoginDate()
-                )
-        );
+        return convertTodoToTodoDto(saved);
     }
 
-     public void deleteByPublicId(String publicId){
+    public void deleteByPublicId(String publicId) {
         var fromTodo = getTodoByPublicId(publicId);
         todoRepository.delete(fromTodo);
-     }
+    }
 
-     public List<TodoDto> getByUser(String mail){
+    public List<TodoDto> getByUser(String mail) {
         var user = userService.getUserByMail(mail);
         return todoRepository.findTodoByUser(user)
                 .stream()
-                .map(todo -> new TodoDto(
-                        todo.getPublicId(),
-                        todo.getTitle(),
-                        todo.getBody(),
-                        todo.getCreateDate(),
-                        todo.getUpdateDate(),
-                        todo.getImageUrl(),
-                        todo.isDone(),
-                        todo.getCompletionDate(),
-                        new UserDto(
-                                todo.getUser().getUsername(),
-                                todo.getUser().getMail(),
-                                todo.getUser().isActive(),
-                                todo.getUser().getCreateDate(),
-                                todo.getUser().getUpdateDate(),
-                                todo.getUser().getImageUrl(),
-                                todo.getUser().getLastLoginDate()
-                        )
-                ))
+                .map(this::convertTodoToTodoDto)
                 .collect(Collectors.toList());
-     }
+    }
 
-     public void updateTodoDoneStatus(String publicId, boolean status){
+    public void updateTodoDoneStatus(String publicId, boolean status) {
         var fromDbTodo = getTodoByPublicId(publicId);
         fromDbTodo.setDone(status);
         todoRepository.save(fromDbTodo);
-     }
+    }
 
-     public TodoDto updateTodo(String publicId, Optional<TodoUpdateRequest> request){
+    public TodoDto updateTodo(String publicId, Optional<TodoUpdateRequest> request) {
         var fromDbTodo = getTodoByPublicId(publicId);
+
         fromDbTodo.setBody(request.get().getBody());
         fromDbTodo.setTitle(request.get().getTitle());
         fromDbTodo.setImageUrl(request.get().getImageUrl());
         todoRepository.save(fromDbTodo); //TODO
 
-        return new TodoDto(
-                fromDbTodo.getPublicId(),
-                fromDbTodo.getTitle(),
-                fromDbTodo.getBody(),
-                fromDbTodo.getCreateDate(),
-                fromDbTodo.getUpdateDate(),
-                fromDbTodo.getImageUrl(),
-                fromDbTodo.isDone(),
-                fromDbTodo.getCompletionDate(),
-                new UserDto(
-                        fromDbTodo.getUser().getUsername(),
-                        fromDbTodo.getUser().getMail(),
-                        fromDbTodo.getUser().isActive(),
-                        fromDbTodo.getUser().getCreateDate(),
-                        fromDbTodo.getUser().getUpdateDate(),
-                        fromDbTodo.getUser().getImageUrl(),
-                        fromDbTodo.getUser().getLastLoginDate()
-                )
-        );
-     }
+        return convertTodoToTodoDto(fromDbTodo);
+    }
 
-     protected Todo getTodoByPublicId(String publicId){
+    protected Todo getTodoByPublicId(String publicId) {
         return todoRepository.findTodoByPublicId(publicId)
-                .orElseThrow(()->new NotFoundException(""));
-     }
+                .orElseThrow(() -> new NotFoundException(""));
+    }
 
 
 }

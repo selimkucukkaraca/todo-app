@@ -1,9 +1,11 @@
 package com.demo.todoapp.service;
 
+import com.demo.todoapp.dto.TodoDto;
 import com.demo.todoapp.dto.UserDto;
 import com.demo.todoapp.exception.NotFoundException;
 import com.demo.todoapp.exception.generic.GenericExistException;
 import com.demo.todoapp.model.ConfirmCode;
+import com.demo.todoapp.model.Todo;
 import com.demo.todoapp.model.User;
 import com.demo.todoapp.repository.ConfirmCodeRepository;
 import com.demo.todoapp.repository.UserRepository;
@@ -32,7 +34,19 @@ public class UserService {
         this.confirmCodeRepository = confirmCodeRepository;
     }
 
-    public UserDto save(UserCreateRequest request){
+    public UserDto convertUserToUserDto(User from) {
+        return new UserDto(
+                from.getUsername(),
+                from.getMail(),
+                from.isActive(),
+                from.getCreateDate(),
+                from.getUpdateDate(),
+                from.getImageUrl(),
+                from.getLastLoginDate()
+        );
+    }
+
+    public UserDto save(UserCreateRequest request) {
         var saved = new User(
                 request.getUsername(),
                 request.getPassword(),
@@ -40,30 +54,22 @@ public class UserService {
                 request.getImageUrl()
         );
 
-        if (userRepository.existsUserByMail(saved.getMail())){
+        if (userRepository.existsUserByMail(saved.getMail())) {
             throw new GenericExistException("user already exist , mail : " + saved.getMail());
         }
 
 
         userRepository.save(saved);
 
-        return new UserDto(
-                saved.getUsername(),
-                saved.getPassword(),
-                saved.isActive(),
-                saved.getCreateDate(),
-                saved.getUpdateDate(),
-                saved.getImageUrl(),
-                saved.getLastLoginDate()
-        );
+        return convertUserToUserDto(saved);
     }
 
-    public void delete(String mail){
+    public void delete(String mail) {
         var fromUser = getUserByMail(mail);
         userRepository.delete(fromUser);
     }
 
-    public void sendConfirmCode(String mail){
+    public void sendConfirmCode(String mail) {
         var user = getUserByMail(mail);
 
         ConfirmCode confirmCode = new ConfirmCode();
@@ -77,7 +83,7 @@ public class UserService {
                 String.valueOf(confirmCode.getCode()));
     }
 
-    public UserDto activateUser(String mail, int code){
+    public UserDto activateUser(String mail, int code) {
         var user = getUserByMail(mail);
         ConfirmCode confirmCode = confirmCodeRepository.findConfirmCodeByCode(code);
 
@@ -86,90 +92,51 @@ public class UserService {
             confirmCodeRepository.deleteById(confirmCode.getId());
             userRepository.save(user);
 
-            return new UserDto(
-                    user.getUsername(),
-                    user.getMail(),
-                    user.isActive(),
-                    user.getCreateDate(),
-                    user.getUpdateDate(),
-                    user.getImageUrl(),
-                    user.getLastLoginDate()
-            );
+            return convertUserToUserDto(user);
         }
         return null;
     }
 
-    public UserDto deactivateUser(String mail){
+    public UserDto deactivateUser(String mail) {
         var fromDbUser = getUserByMail(mail);
         fromDbUser.setActive(false);
 
         userRepository.save(fromDbUser);
 
-        return new UserDto(
-                fromDbUser.getUsername(),
-                fromDbUser.getMail(),
-                fromDbUser.isActive(),
-                fromDbUser.getCreateDate(),
-                fromDbUser.getUpdateDate(),
-                fromDbUser.getImageUrl(),
-                fromDbUser.getLastLoginDate()
-        );
+        return convertUserToUserDto(fromDbUser);
     }
 
-    public UserDto getByMail(String mail){
+    public UserDto getByMail(String mail) {
         User fromDbUser = userRepository.findUserByMail(mail)
                 .orElseThrow(() -> new NotFoundException("mail not found : " + mail));
 
-        return new UserDto(
-                fromDbUser.getUsername(),
-                fromDbUser.getMail(),
-                fromDbUser.isActive(),
-                fromDbUser.getCreateDate(),
-                fromDbUser.getUpdateDate(),
-                fromDbUser.getImageUrl(),
-                fromDbUser.getLastLoginDate()
-        );
+        return convertUserToUserDto(fromDbUser);
     }
 
-    public UserDto login(UserLoginRequest request){
+    public UserDto login(UserLoginRequest request) {
         var fromDbUser = getUserByMail(request.getMail());
-        if (fromDbUser.getPassword().equals(request.getPassword())){
+        if (fromDbUser.getPassword().equals(request.getPassword())) {
             fromDbUser.setLastLoginDate(LocalDateTime.now());
             userRepository.save(fromDbUser);
-            return new UserDto(
-                    fromDbUser.getUsername(),
-                    fromDbUser.getMail(),
-                    fromDbUser.isActive(),
-                    fromDbUser.getCreateDate(),
-                    fromDbUser.getUpdateDate(),
-                    fromDbUser.getImageUrl(),
-                    fromDbUser.getLastLoginDate()
-            );
+
+            return convertUserToUserDto(fromDbUser);
         }
         throw new RuntimeException();
     }
 
-    public UserDto updateUser(String mail,Optional<UserUpdateRequest> request){
+    public UserDto updateUser(String mail, Optional<UserUpdateRequest> request) {
         var fromDbUser = getUserByMail(mail);
         fromDbUser.setUsername(request.get().getUsername());
         fromDbUser.setPassword(request.get().getPassword());
         fromDbUser.setImageUrl(request.get().getImageUrl());
         userRepository.save(fromDbUser);
 
-        return new UserDto(
-                fromDbUser.getUsername(),
-                fromDbUser.getMail(),
-                fromDbUser.isActive(),
-                fromDbUser.getCreateDate(),
-                fromDbUser.getUpdateDate(),
-                fromDbUser.getImageUrl(),
-                fromDbUser.getLastLoginDate()
-        );
+        return convertUserToUserDto(fromDbUser);
     }
 
-    protected User getUserByMail(String mail){
+    protected User getUserByMail(String mail) {
         return userRepository.findUserByMail(mail)
-                .orElseThrow(()->new NotFoundException(""));
+                .orElseThrow(() -> new NotFoundException(""));
     }
 
 }
